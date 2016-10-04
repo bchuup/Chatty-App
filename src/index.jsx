@@ -4,7 +4,7 @@
 require("../styles/application.scss");
 
 // Render the top-level React component
-import React from 'react';
+import React from 'react';//equivalent to --> var React = require('react')
 import ReactDOM from 'react-dom';
 import App from './App.jsx';
 
