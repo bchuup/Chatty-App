@@ -8,35 +8,34 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Bob"},
-      messages: [
-        {id: 1,
-         username: "Bob",
-         content: "Has anyone seen my marbles?"},
-        {id: 2,
-         username: "Anonymous",
-         content: "No, I think you lost them. You lost your marbles Bob, you lost them for good"}
-      ],
+      messages: [],
       inputText: ""
     }
     // this.handleMsgEnter = this.handleMsgEnter.bind(this);
   }
 
-  msgEnter(event) {
-    let newMsg = event.target.value
-    this.state.messages.push({id: this.state.messages.length + 1 , username: this.state.currentUser.name, content: newMsg});
-    this.setState(this.state);
-  }
+handleServerMessage = (msgEvent) => {
+  console.log(msgEvent)
+  let servermessage = JSON.parse(msgEvent.data)
+  this.state.messages.push(servermessage)
+  this.setState(this.state)
+}
+
 
   componentDidMount() {
-  console.log("componentDidMount <App />");
-  setTimeout(() => {
-    console.log("Simulating incoming message");
-    // Add a new message to the list of messages in the data store
-    this.state.messages.push({id: 3, username: "Michelle", content: "Hello there!"});
-    // Update the state of the app component. This will call render()
-    this.setState(this.state)
-  }, 3000);
-}
+    this.socket = new WebSocket("ws://192.168.33.10:4000");
+    this.socket.onopen = () => {
+      // this.socket.send("Here's some text that the server is urgently awaiting!");
+      this.socket.onmessage = this.handleServerMessage
+    };
+  }
+
+  msgEnter(event) {
+    let newMsg = event.target.value
+    let packagemsg = {user: this.state.currentUser.name, message: event.target.value}
+    this.socket.send(JSON.stringify(packagemsg))
+  }
+
   render() {
     console.log("Rendering <App/>");
     return (
