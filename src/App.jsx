@@ -8,21 +8,20 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Bob"},
-      messages: [],
-      inputText: ""
+      messages: []
     }
     // this.handleMsgEnter = this.handleMsgEnter.bind(this);
   }
 
-handleServerMessage = (msgEvent) => {
-  console.log(msgEvent)
-  let servermessage = JSON.parse(msgEvent.data)
-  this.state.messages.push(servermessage)
-  this.setState(this.state)
-}
+  handleServerMessage = (msgEvent) => {
+    let msg = msgEvent.data
+    let servermessage = JSON.parse(msg)
+    console.log(servermessage)
+    this.state.messages.push(servermessage)
+    this.setState(this.state)
+  }
 
-
-  componentDidMount() {
+  componentDidMount = () => {
     this.socket = new WebSocket("ws://192.168.33.10:4000");
     this.socket.onopen = () => {
       // this.socket.send("Here's some text that the server is urgently awaiting!");
@@ -30,10 +29,16 @@ handleServerMessage = (msgEvent) => {
     };
   }
 
-  msgEnter(event) {
-    let newMsg = event.target.value
-    let packagemsg = {user: this.state.currentUser.name, message: event.target.value}
-    this.socket.send(JSON.stringify(packagemsg))
+  msgEnter = (event) => {
+    // let newMsg = event.target.value
+    let packageMsg = {username: this.state.currentUser.name, content: event.target.value}
+    this.socket.send(JSON.stringify(packageMsg))
+  }
+
+  userNameEnter = (event) => {
+    let newName = event.target.value
+    this.state.currentUser.name = newName
+    this.setState(this.state)
   }
 
   render() {
@@ -45,8 +50,9 @@ handleServerMessage = (msgEvent) => {
         </div>
         <MessageList msglist= {this.state.messages}/>
         <ChatBar
-          currentuser={this.state.currentUser.name}
+          initialName={this.state.currentUser.name}
           handleMsgEnter={this.msgEnter.bind(this)}
+          userNameEnter={this.userNameEnter.bind(this)}
         />
       </div>
     )

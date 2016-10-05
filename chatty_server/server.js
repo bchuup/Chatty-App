@@ -14,26 +14,30 @@ const server = express()
   .use(express.static('public'))
   .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening on ${ PORT }`));
 
+const broadcast = function (data) {
+    wss.clients.forEach(client => {
+      client.send(JSON.stringify(data))
+  });
+};
+
+
+
 // Create the WebSockets server
 const wss = new SocketServer({ server });
 
 
-// Set up a callback that will run when a client connects to the server
-// When a client connects they are assigned a socket, represented by
-// the ws parameter in the callback.
+
 wss.on('connection', (ws) => {
   console.log('Client connected');
-  ws.send("Connected to server");
-
+  // ws.send("Connected to server");
     ws.on('message', (message) => {
       let objmessage = JSON.parse(message);
       let id = uuid.v4();
       objmessage.id = id ;
-      let serverMessage = {id: objmessage.id, username: objmessage.user, content: objmessage.message};
+      console.log(objmessage)
 
-      wss.clients.forEach(client => {
-        client.send(JSON.stringify(serverMessage))
-      })
+    broadcast(objmessage);
+
     })
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
