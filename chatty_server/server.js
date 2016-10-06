@@ -34,8 +34,6 @@ wss.on('connection', (ws) => {
       let objmessage = JSON.parse(message);
       let id = uuid.v4();
       objmessage.id = id ;
-      console.log(objmessage)
-
     broadcast(objmessage);
 
     })

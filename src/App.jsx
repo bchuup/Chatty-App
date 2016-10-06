@@ -7,16 +7,14 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: {name: "Bob"},
+      currentUser: {name: "Anonymous"},
       messages: []
     }
-    // this.handleMsgEnter = this.handleMsgEnter.bind(this);
   }
 
   handleServerMessage = (msgEvent) => {
     let msg = msgEvent.data
     let servermessage = JSON.parse(msg)
-    console.log(servermessage)
     this.state.messages.push(servermessage)
     this.setState(this.state)
   }
@@ -31,12 +29,15 @@ class App extends Component {
 
   msgEnter = (event) => {
     // let newMsg = event.target.value
-    let packageMsg = {username: this.state.currentUser.name, content: event.target.value}
+    let packageMsg = {username: this.state.currentUser.name, content: event.target.value, type: "incomingMessage"}
     this.socket.send(JSON.stringify(packageMsg))
   }
 
   userNameEnter = (event) => {
+    let oldName = this.state.currentUser.name
     let newName = event.target.value
+    let userChange = {username: oldName, nameChangeText: `${oldName} changed their name to ${newName}` , type: "nameChange"}
+    this.socket.send(JSON.stringify(userChange))
     this.state.currentUser.name = newName
     this.setState(this.state)
   }
@@ -48,7 +49,9 @@ class App extends Component {
         <div>
           <h1>Hello React :)</h1>
         </div>
-        <MessageList msglist= {this.state.messages}/>
+        <MessageList
+          msglist= {this.state.messages}
+        />
         <ChatBar
           initialName={this.state.currentUser.name}
           handleMsgEnter={this.msgEnter.bind(this)}
