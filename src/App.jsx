@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import ChatBar from './ChatBar.jsx';
 import MessageList from './MessageList.jsx';
+import Nav from './Nav.jsx';
+
 
 
 class App extends Component {
@@ -8,21 +10,36 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Anonymous"},
-      messages: []
+      messages: [],
+      userCount: 0
     }
   }
 
   handleServerMessage = (msgEvent) => {
     let msg = msgEvent.data
     let servermessage = JSON.parse(msg)
+    if (servermessage.count){
+      this.state.userCount = servermessage.count
+      this.setState(this.state)
+    } else {
     this.state.messages.push(servermessage)
     this.setState(this.state)
+    }
   }
+
+  // handleServerClientCount = (countEvent) => {
+  //   let count = countEvent.data
+  //   let parsecount = JSON.parse(count)
+  //   console.log(parsecount, 'parsecount')
+  //   console.log(Number(parsecount) 'number parsecount')
+  //   // this.state.userCount =
+  //   // this.setState(this.state)
+  // }
 
   componentDidMount = () => {
     this.socket = new WebSocket("ws://192.168.33.10:4000");
     this.socket.onopen = () => {
-      // this.socket.send("Here's some text that the server is urgently awaiting!");
+
       this.socket.onmessage = this.handleServerMessage
     };
   }
@@ -36,22 +53,18 @@ class App extends Component {
   userNameEnter = (event) => {
     let oldName = this.state.currentUser.name
     let newName = event.target.value
-    let userChange = {username: oldName, nameChangeText: `${oldName} changed their name to ${newName}` , type: "nameChange"}
-    this.socket.send(JSON.stringify(userChange))
+    let userChange = {username: oldName, content: `${oldName} changed their name to ${newName}` , type: "nameChange"}
     this.state.currentUser.name = newName
     this.setState(this.state)
+    this.socket.send(JSON.stringify(userChange))
   }
 
   render() {
     console.log("Rendering <App/>");
     return (
       <div>
-        <div>
-          <h1>Hello React :)</h1>
-        </div>
-        <MessageList
-          msglist= {this.state.messages}
-        />
+        <Nav userCount= {this.state.userCount} />
+        <MessageList msglist= {this.state.messages}/>
         <ChatBar
           initialName={this.state.currentUser.name}
           handleMsgEnter={this.msgEnter.bind(this)}

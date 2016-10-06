@@ -20,7 +20,7 @@ class Message extends Component{
         return (
           <div>
             <div className="message">
-              <span className="content">{this.props.nameChangeText}</span>
+              <span className="content">{this.props.content}</span>
             </div>
           </div>
         )

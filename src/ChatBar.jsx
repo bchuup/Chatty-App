@@ -13,7 +13,6 @@ class ChatBar extends Component {
   }
 
   handleNameChange = (event) => {
-
     if (event.key === 'Enter' && this.props.initialName !== this.refs.namebox.value) {
       this.props.userNameEnter(event);
     }
