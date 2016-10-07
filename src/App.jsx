@@ -27,19 +27,9 @@ class App extends Component {
     }
   }
 
-  // handleServerClientCount = (countEvent) => {
-  //   let count = countEvent.data
-  //   let parsecount = JSON.parse(count)
-  //   console.log(parsecount, 'parsecount')
-  //   console.log(Number(parsecount) 'number parsecount')
-  //   // this.state.userCount =
-  //   // this.setState(this.state)
-  // }
-
   componentDidMount = () => {
     this.socket = new WebSocket("ws://192.168.33.10:4000");
     this.socket.onopen = () => {
-
       this.socket.onmessage = this.handleServerMessage
     };
   }
