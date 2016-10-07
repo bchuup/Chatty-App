@@ -28,7 +28,7 @@ class App extends Component {
   }
 
   componentDidMount = () => {
-    this.socket = new WebSocket("ws://192.168.33.10:4000");
+    this.socket = new WebSocket("ws://localhost:4000");
     this.socket.onopen = () => {
       this.socket.onmessage = this.handleServerMessage
     };
